@@ -58,6 +58,10 @@ DESCRIBE EXTENDED sales;
 
 -- COMMAND ----------
 
+select * from sales
+
+-- COMMAND ----------
+
 -- MAGIC %md
 -- MAGIC
 -- MAGIC  
@@ -100,6 +104,14 @@ CREATE TABLE sales_delta AS
   SELECT * FROM sales_tmp_vw;
   
 SELECT * FROM sales_delta
+
+-- COMMAND ----------
+
+describe extended sales_delta;
+
+-- COMMAND ----------
+
+describe extended sales_tmp_vw;
 
 -- COMMAND ----------
 
@@ -165,6 +177,10 @@ CREATE OR REPLACE TABLE purchase_dates (
 
 -- COMMAND ----------
 
+describe extended purchase_dates
+
+-- COMMAND ----------
+
 -- MAGIC %md
 -- MAGIC
 -- MAGIC  
@@ -208,8 +224,8 @@ SELECT * FROM purchase_dates
 
 -- COMMAND ----------
 
--- INSERT INTO purchase_dates VALUES
--- (1, 600000000, 42.0, "2020-06-18")
+INSERT INTO purchase_dates VALUES
+(1, 600000000, 42.0, "2020-06-18")
 
 -- COMMAND ----------
 
@@ -244,6 +260,10 @@ ALTER TABLE purchase_dates ADD CONSTRAINT valid_date CHECK (date > '2020-01-01')
 -- COMMAND ----------
 
 DESCRIBE EXTENDED purchase_dates
+
+-- COMMAND ----------
+
+describe detail purchase_dates
 
 -- COMMAND ----------
 
@@ -288,6 +308,10 @@ SELECT * FROM users_pii;
 
 -- COMMAND ----------
 
+describe extended users_pii;
+
+-- COMMAND ----------
+
 -- MAGIC %md
 -- MAGIC
 -- MAGIC  
@@ -296,10 +320,6 @@ SELECT * FROM users_pii;
 -- MAGIC All of the comments and properties for a given table can be reviewed using **`DESCRIBE TABLE EXTENDED`**.
 -- MAGIC
 -- MAGIC **NOTE**: Delta Lake automatically adds several table properties on table creation.
-
--- COMMAND ----------
-
-DESCRIBE EXTENDED users_pii
 
 -- COMMAND ----------
 
@@ -368,7 +388,7 @@ SHALLOW CLONE purchases
 
 -- COMMAND ----------
 
--- MAGIC %python 
+-- MAGIC %python
 -- MAGIC DA.cleanup()
 
 -- COMMAND ----------

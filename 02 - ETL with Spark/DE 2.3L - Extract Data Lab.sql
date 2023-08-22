@@ -65,8 +65,66 @@
 
 -- COMMAND ----------
 
--- TODO
-<FILL_IN> "${DA.paths.kafka_events}" 
+select * from text.`${DA.paths.kafka_events}`
+
+-- COMMAND ----------
+
+
+
+
+select * from  json.`${DA.paths.kafka_events}` 
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC spark.sql(
+-- MAGIC   f"""
+-- MAGIC   CREATE TABLE IF NOT EXISTS events_json 
+-- MAGIC   (key binary, offset long, partition integer, timestamp long, topic string, value binary)
+-- MAGIC   USING JSON
+-- MAGIC   LOCATION "{DA.paths.kafka_events}"
+-- MAGIC   """
+-- MAGIC )
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC df = spark.read.json(DA.paths.kafka_events)
+-- MAGIC display(df)
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC df.printSchema()
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC from pyspark.sql.functions import col
+-- MAGIC from pyspark.sql.types import BinaryType, LongType, IntegerType, StringType 
+-- MAGIC
+-- MAGIC df = df.withColumns({"key": col("key").cast(BinaryType()),
+-- MAGIC                 "offset": col('offset').cast(LongType()),
+-- MAGIC                 "partition": col('partition').cast(IntegerType()),
+-- MAGIC                 "timestamp": col('timestamp').cast(LongType()),
+-- MAGIC                 "topic": col('topic').cast(StringType()),
+-- MAGIC                 "value": col('value').cast(BinaryType())})
+-- MAGIC
+-- MAGIC df.write.mode("overwrite").saveAsTable("juan_parra_swqe_da_delp.events_json_2")
+
+-- COMMAND ----------
+
+show tables
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC df.write.format("json").mode("overwrite").option("path", f"{DA.paths.kafka_events}").saveAsTable("juan_parra_swqe_da_delp.events_json_1")
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC df.printSchema()
 
 -- COMMAND ----------
 

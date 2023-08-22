@@ -18,6 +18,10 @@
 
 # COMMAND ----------
 
+display(dbutils.fs.ls('/databricks-datasets'))
+
+# COMMAND ----------
+
 # MAGIC %md
 # MAGIC ## Classroom Setup
 # MAGIC

@@ -37,6 +37,76 @@
 
 -- COMMAND ----------
 
+-- MAGIC %python
+-- MAGIC df = spark.createDataFrame([(1, 2, 3, 4)], schema="col1 INT, col2 INT, col3 INT, col4 INT")
+
+-- COMMAND ----------
+
+create database jcparra_cert;
+use jcparra_cert
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC df.write.mode('overwrite').saveAsTable("managed_table")
+
+-- COMMAND ----------
+
+select * from managed_table
+
+-- COMMAND ----------
+
+describe extended managed_table
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC display(dbutils.fs.ls("dbfs:/user/hive/warehouse/jcparra_cert.db/managed_table"))
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC spark.sql("create view view_from_managed_table as (select * from managed_table)")
+
+-- COMMAND ----------
+
+describe extended view_from_managed_table
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC df.write.mode('overwrite').save("dbfs:/FileStore/juanc_parra/external_table_location")
+
+-- COMMAND ----------
+
+create table external_table using delta location 'dbfs:/FileStore/juanc_parra/external_table_location'
+
+-- COMMAND ----------
+
+describe extended external_table
+
+-- COMMAND ----------
+
+drop table managed_table;
+drop table external_table;
+drop view view_from_managed_table;
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC display(dbutils.fs.ls("dbfs:/FileStore/juanc_parra/external_table_location"))
+
+-- COMMAND ----------
+
+SELECT * FROM delta.`dbfs:/FileStore/juanc_parra/external_table_location`
+
+-- COMMAND ----------
+
+-- MAGIC %python
+-- MAGIC display(dbutils.fs.ls("dbfs:/user/hive/warehouse/jcparra_cert.db/managed_table"))
+
+-- COMMAND ----------
+
 -- MAGIC %run ../Includes/Classroom-Setup-03.1
 
 -- COMMAND ----------
@@ -48,6 +118,10 @@
 -- MAGIC Let's start by creating two schemas (aka databases):
 -- MAGIC - One with no **`LOCATION`** specified
 -- MAGIC - One with **`LOCATION`** specified 
+
+-- COMMAND ----------
+
+select '${da.schema_name}'
 
 -- COMMAND ----------
 

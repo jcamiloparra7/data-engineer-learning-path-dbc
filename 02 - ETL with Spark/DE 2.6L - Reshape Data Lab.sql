@@ -94,12 +94,28 @@
 
 -- COMMAND ----------
 
--- TODO
-CREATE OR REPLACE VIEW events_pivot
-<FILL_IN>
-("cart", "pillows", "login", "main", "careers", "guest", "faq", "down", "warranty", "finalize", 
+select * from events
+
+-- COMMAND ----------
+
+select count(*) from events_pivot
+
+-- COMMAND ----------
+
+create or replace view events_pivot as (
+
+select
+  * 
+from 
+  (select
+    user_id as user,
+    event_name from events
+  ) pivot 
+  (count(*) for event_name in ("cart", "pillows", "login", "main", "careers", "guest", "faq", "down", "warranty", "finalize", 
 "register", "shipping_info", "checkout", "mattresses", "add_item", "press", "email_coupon", 
-"cc_info", "foam", "reviews", "original", "delivery", "premium")
+"cc_info", "foam", "reviews", "original", "delivery", "premium"))
+
+)
 
 -- COMMAND ----------
 
@@ -109,9 +125,11 @@ CREATE OR REPLACE VIEW events_pivot
 
 -- MAGIC %python
 -- MAGIC # TODO
--- MAGIC (spark.read
--- MAGIC     <FILL_IN>
--- MAGIC     .createOrReplaceTempView("events_pivot"))
+-- MAGIC (spark.read.table("events").withColumnRenamed("user_id", "user").groupBy("user").pivot("event_name").count().createOrReplaceTempView("events_pivot"))
+
+-- COMMAND ----------
+
+select * from events_pivot
 
 -- COMMAND ----------
 
@@ -165,9 +183,13 @@ CREATE OR REPLACE VIEW events_pivot
 
 -- COMMAND ----------
 
+select * from transactions
+
+-- COMMAND ----------
+
 -- TODO
-CREATE OR REPLACE VIEW clickpaths AS
-<FILL_IN>
+CREATE OR REPLACE TEMP VIEW clickpaths AS
+select * FROM events_pivot JOIN transactions on events_pivot.user = transactions.user_id
 
 -- COMMAND ----------
 
@@ -177,9 +199,16 @@ CREATE OR REPLACE VIEW clickpaths AS
 
 -- MAGIC %python
 -- MAGIC # TODO
--- MAGIC (spark.read
--- MAGIC     <FILL_IN>
+-- MAGIC
+-- MAGIC transactions_df = spark.read.table("transactions")
+-- MAGIC events_pivot_df = spark.read.table("events_pivot")
+-- MAGIC
+-- MAGIC (events_pivot_df.join(transactions_df, events_pivot_df.user == transactions_df.user_id)
 -- MAGIC     .createOrReplaceTempView("clickpaths"))
+
+-- COMMAND ----------
+
+select * from clickpaths
 
 -- COMMAND ----------
 

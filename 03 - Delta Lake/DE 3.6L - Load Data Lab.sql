@@ -64,7 +64,7 @@
 -- COMMAND ----------
 
 -- TODO
-<FILL_IN>
+CREATE OR REPLACE TABLE events_raw(key BINARY, offset LONG, partition INTEGER, timestamp LONG, topic STRING, value BINARY)
 
 -- COMMAND ----------
 
@@ -94,6 +94,14 @@
 
 -- COMMAND ----------
 
+describe history events_raw
+
+-- COMMAND ----------
+
+describe extended events_raw
+
+-- COMMAND ----------
+
 -- MAGIC %md 
 -- MAGIC
 -- MAGIC ## Insert Raw Events Into Delta Table
@@ -102,8 +110,18 @@
 
 -- COMMAND ----------
 
+select * from events_json
+
+-- COMMAND ----------
+
 -- TODO
-<FILL_IN>
+MERGE INTO events_raw AS er
+USING events_json AS ej
+ON er.key = ej.key
+WHEN NOT MATCHED THEN 
+  INSERT (key, offset, partition, timestamp, topic, value) 
+  VALUES (ej.key, ej.offset, ej.partition, ej.timestamp, ej.topic, ej.value)
+
 
 -- COMMAND ----------
 
@@ -115,7 +133,24 @@
 -- COMMAND ----------
 
 -- TODO
-<FILL_IN>
+MERGE INTO events_raw AS er
+USING events_json AS ej
+ON er.key = ej.key
+WHEN NOT MATCHED THEN 
+  INSERT *
+
+-- COMMAND ----------
+
+INSERT INTO
+  events_raw
+SELECT
+  *
+FROM
+  events_json
+
+-- COMMAND ----------
+
+
 
 -- COMMAND ----------
 
@@ -154,7 +189,7 @@
 -- COMMAND ----------
 
 -- TODO
-<FILL_IN> ${da.paths.datasets}/ecommerce/raw/item-lookup
+create table item_lookup  as select * from parquet.`${da.paths.datasets}/ecommerce/raw/item-lookup`
 
 -- COMMAND ----------
 
